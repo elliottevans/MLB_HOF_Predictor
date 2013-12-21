@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>MLB Hall of Fame Prediction</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--
+    production
+    <link href="http://twitter.github.io/bootstrap/assets/css/bootstrap.css" rel="stylesheet">
+    <link href="http://twitter.github.io/bootstrap/assets/css/bootstrap.min.css" rel="stylesheet">
+    -->
+    <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css" rel="stylesheet">
+    <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/js/bootstrap.min.js"></script>
+  </head>
+  <body style="padding-top: 50px;">
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="overview.html">MLB Hall of Fame Prediction</a>
+          <div class="nav-collapse collapse">
+            <ul class="nav pull-right">
+              <li><a href="#overview">Overview</a></li>
+              <li><a href="#dataset">Data Set</a></li>
+              <li><a href="#methodology">Methodology</a></li>
+              <li><a href="#results">Results</a></li>
+              <li><a href="#conclusions">Conclusions</a></li>
+              <li><a href="abstract.pdf"><strong>Abstract</strong></a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="container">
+
+      <div class="row" style="padding-bottom: 30px;">
+        <div class="span8">
+          <h1>MLB Hall of Fame Predictor</h1>
+        </div>
+        <div class="span4">
+          <h4 style="text-align: right;">
+            <a href="http://www.cs.northwestern.edu/~pardo/courses/eecs349/">Northwestern University, EECS 349</a><br>Instructor Bryan Pardo
+          </h4>
+        </div>
+        
+        
+      </div>
+
+      <div class="row">
+        <center>
+          <div class="well span3">
+            <h5>Elliott Evans</h5>
+            <p>elliottevans2015@u.northwestern.edu</p>
+          </div>
+          <div class="well span3">
+            <h5>Jon Ford</h5>
+            <p>jonford2015@u.northwestern.edu</p>
+          </div>
+          <div class="well span3">
+            <h5>Corey McMahon</h5>
+            <p>coreymcmahon2015@u.northwestern.edu</p>
+          </div>
+        </center>
+      </div>
+
+      <div class="row" id="overview">
+        <div class="span8">
+          <h2>Overview</h2>
+          <p>Come election time for the Major League Baseball Hall of Fame, various players,
+             commentators and writers, attempt to predict who will and will not gain
+             entry. The desire for knowledge about whether or not a player will be inducted comes from multiple angles. Fans want to know if their favorite players are going to make the Hall or not. Writers often write articles predicting the voting outcomes and are judged more favorably if they are consistently accurate. Teams themselves have financial stake in the matter; if a former superstar is inducted, special Hall of Fame jerseys can be sold. <strong>For each of these groups of people, a system that could accurately predict whether or not a given player will make the hall of fame would be extremely useful.</strong>
+          </p>
+
+          <p>
+            <strong>We have chosen to build a system that, given the lifetime statistics of a Major League Baseball position player, predicts whether or not that position player will be inducted into the Hall of Fame.</strong> To do this, our learner uses past player statistics (obtained from <a href="http://www.fangraphs.com">Fangraphs</a>) to create Gaussian distribution functions for both Hall of Famers and non-Hall of Famers. The fewer players that our system misclassifies, the better it has become.
+          </p>
+        </div>
+        <div class="span2 offset2">
+          <img src="dimaggio.jpg" style="padding-bottom:20px;">
+          <p style="font-size: 10px;">Legendary Hall of Famer Joe DiMaggio</p>
+        </div>
+      </div>
+
+      <div class="row" style="padding-bottom:30px;" id="dataset">
+        <div class="span12">
+          <h2>Data Set</h2>
+          <p>We obtained our data set from <a href="http://www.fangraphs.com">Fangraphs</a>, a website that keeps advanced baseball statistics. <strong>Our data set contains career statistics of every player that played any part of his major league career between the years 1974 and 1984, inclusive.</strong> The data we used contains 15 statistics in particular: G, PA, HR, R, RBI, SB, ISO, BABIP, AVG, OBP, SLG, wOBA, wRC+, BsR, and WAR (definitions for all of which can be found at the <a href="http://www.fangraphs.com/library/">Fangraphs Library Stat Glossary</a>). In total, this data set contains data for 483 players, 29 of whom are in the Hall of Fame.</p>
+
+          <p>The reason for the selection of these particular years (1974-1984) is a pragmatic one. A player with a long career that ended in 1974 began his career in the late 1950s or later. If we included earlier players, their statistics, very different because of how far removed from the present it is, would change the model in a negative way. A player whose career began in 1984, would have a career that ended by the early 2000s and is therefore 10 years removed from playing, and therefore eligble for the Hall of Fame, per the Baseball Writers' Association of America's <a href="https://sites.google.com/site/brettbushthesis/chapter-2/major-league-baseball-hall-of-fame-entrance-qualifications">Hall of Fame elibility rules.</a></p>
+
+          <center>
+            <img src="data_sample.png">
+            <p style="font-size:12px;">Sample data from our data set, provided by <a href="http://www.fangraphs.com">Fangraphs</a>.</p>
+          </center>
+        </div>
+      </div>
+
+      <div class="row" id="methodology">
+        <div class="span12">
+          <h2>Methodology</h2>
+        </div>
+        
+        <div class="span6">
+          
+          <p>Our system works in two parts, training and validation. To train, it takes players with known classifications, some in the Hall of Fame class, others in the non-Hall of Fame class, whom we will refer to as Hall of Famers and Scrubs, respectively. We choose some of the above statistics on which we want to train, which could be some or all of them. The training data is split between the classes and the mean and covariance matrix of the desired statistics are computed. <strong>Finally, for each class, a multi-dimensional Gaussian distribution function is created.</strong></p>
+
+          <p>To validate, a separate set of players is supplied. The players statistics are plugged into the Gaussian distribution functions for each classification. Using both functions, if we find that the probability of a player belonging to the HOF class is greater than the probability of him belonging to the Scrub class then he is classified as a Hall-of-Famer, otherwise he is a Scrub.</p>
+
+          <p>The baseline approach against which we compare our system is the assumption that the probability of a player making the Hall of Fame is .062 (or the proportion of Hall-of-Famers in our training set) and the probability of a player not making the Hall of Fame is therefore .938. The baseline will classify a player based on which probability is greateer meaning it will classify every player as a Scrub and will have an error rate of .062.</p>
+          
+
+        </div>
+        <div class="span6">
+          <img src="example_gaussian_hof2.jpg">
+        </div>
+      </div>
+
+      <div class="row" id="results" style="padding-bottom:20px">
+        <div class="span12">
+          <h2>Process & Results</h2>
+        </div>
+        <div class="span8">
+          
+          <!--
+          <p><strong>Thus far, we have determined that our system is about as accurate as using the baseline approach if we use advanced metrics</strong> and worse if we use typical metrics. For instance, when we create our Gaussian models using HR and RBI, we obtain an average error rate of .137. When using the advanced metrics of wOBA, wRC+, and WAR, we obtain an average error rate of approximately .066, very similar to the baseline error rate of .062. Interestingly enough, the "triple crown" of AVG, HR and RBI performed very poorly with an error rate of .127.
+          </p>
+        -->
+          <p><strong>The performance of our Hall of Fame predictor varies greatly depending on which statistics are used.</strong> When used in isolation, the performance of the statistics varies from an error rate of .269 when using BABIP to an error rate of .094 when using WAR. This is relatively intuitive, as BABIP is not reflective of overall performance, while the entire purpose of the WAR statistic is to encompass overall performance. Overall, no individual statistic performed as well as the baseline approach.</p>
+        </div>
+        <div class="span12">
+          <center>
+            <img src="individual_error_rates.jpg">
+          </center>
+        </div>
+
+        <div class="span12">
+          <center>
+            <h2>Combining statistics for greater accuracy</h2>
+          </center>
+        </div>
+
+        <div class="span5 offset1">
+          <p><strong>Better performance can be achieved through the use of multiple statistics.</strong> The question then becomes which combinations of statistics yields the best results. The best possible combination would be statistics that perform well on their own and are relatively uncorrelated - that is, they tell us different things about a player's ability and therfore probability of being inducted into the Hall of Fame. The above graph shows isolated performance of the individual statistics. The graph below shows us the correlation of the various statistics.
+        </div>
+        <div class="span4 offset1">
+          <p class="lead"><em>The best possible combination would be statistics that perform well on their own and are relatively uncorrelated - that is, they tell us different things about a player's ability and therfore probability of being inducted into the Hall of Fame.</em></p>
+        </div>
+        <div class="span12">
+          <center>
+            <h4>Correlation matrix for various baseball statistics</h4>
+            <img src="correlation_matrix.png">
+          </center>
+        </div>
+
+        
+
+        <div class="span5 offset1">
+          <img src="stat_combo_error_rates.png">
+        </div>
+        <div class="span5">
+          <p>Using this information, <strong>we determined that the model with the best possible predictive power would use the statistics WAR and BsR.</strong> This outperforms the other combinations of statistics that we tested together due to their historical importance or because of their favor among baseball statisticians.</p>
+          <p>The triple crown statistics of AVG, HR and RBI perform very poorly, which is somewhat surprising given that the baseball media, who comprise the voters for the Hall of Fame treat these statistics with such importance. WAR alone was the best individual statistic, but is improved further when combined with the baserunning statistic BsR, which also performed well and is not strongly correlated with WAR, and also with wRC+ which, among offensive statistics, was least correlated with WAR.</p>
+          <p><strong>Alas, no combination of statistics was able to outperform the baseline.</strong> </p>
+        </div>
+        
+        <div class="span12">
+          <center>
+            <h2>Adding weights</h2>
+          </center>
+        </div>
+        <div class="span3 offset1">
+          <p><strong>We found that most of the error in our model was coming from classifying too many scrubs as Hall of Famers, rather than vice-versa.</strong></p>
+          <p>To address this, we decided to create a weight variable, in the hopes that we could make our model a bit more selective as to which players it classified as Hall of Famers. The weight used by our model for a given combination of statistics is not arbitrary. For every fold, it is determined to be the weight that causes the least misclassifications on the training set.</p>
+        </div>
+        <div class="span8">
+          <img src="individual_error_rates_with_weights.jpg">
+        </div>
+
+        <div class="span12">
+          <center>
+            <h1>The Final Model</h1>
+          </center>
+        </div>
+
+        <div class="span6 offset3">
+          <p class="lead">With the use of weighting and statistical combinations, our system was able to beat the baseline approach.</p>
+          <p>The addition of weights changed various combinations of statistics differently. The triple crown statistics improved dramatically with the addition of weights, to about on par with the baseline approach. WAR, by itself, performed far worse. <strong>The combination of WAR, BsR and wRC+ remained the best, and with an error rate of .0545, exceeded the baseline approach by three quarters of a percent.</strong></p>
+        </div>
+        <div class="span12">
+          <center>
+            <img src="stat_combo_error_rates_weights.png">
+          </center>
+        </div>
+      </div>
+
+      <div class="row" id="conclusions">
+        <div class="span12">
+          <h1>Conclusions</h1>
+        </div>
+        <div class="span6">
+          <p>This research has shed light on the difficulty of predicting what players will or will not make the Hall of Fame. We attribute this difficulty to a pair of reasons:</p>
+          <ol>
+            <li>
+              <p><strong>There is no clear division between Hall of Famers and scrubs.</strong> There are players like Lou Whitaker, clearly deserving of induction, or at least consideration, who do not. Whitaker failed to garner even 5% of the vote despite strong numbers in his 18 year career. There are also many players who have been inducted even though their stat lines would suggest they don't belong in the Hall of Fame.</p>
+            </li>
+            <li>
+              <p><strong>Voters include other factors beyond a player's career statistics.</strong> Some of the other criteria used by voters are statistically-based, such as how a player performed specifically at the peak of his career. Other criteria, however, are not easily quantified, such as a player's reputation among fellow players and sportwriters or whether or not a player was ever implicated in a controversy involving the use of banned, performance-enhancing drugs. Some also claim a bias for players of certain teams or eras. Improvements to our model would look to include more of this information.
+              </p>
+            </li>
+          </ol>
+          <p>Those difficulties aside, we were pleased that our model was able to perform as well as it could. <strong>Our model's performance suggests that, despite the grievences of some fans and writers, the strongest underlying factor of a player's chance remains his career statistics and the other factors tend to affect players around the margins.</strong>
+          </p>
+        </div>
+        <div class="span4 offset1">
+          <center>
+            <h4>Our model's predictions for the Baseball Hall of Fame class of 2014*</h4>
+            <table class="table table-striped">
+              <tr><th>Player</th><th>Classification</th></tr>
+              <tr><td>Craig Biggio </td><td>Hall of Famer</td></tr>
+              <tr><td>Jeff Bagwell</td><td>Hall of Famer</td></tr>
+              <tr><td>Mike Piazza</td><td>Scrub</td></tr>
+              <tr><td>Tim Raines</td><td>Scrub</td></tr>
+              <tr><td>Barry Bonds**</td><td>Scrub</td></tr>
+              <tr><td>Edgar Martinez</td><td>Scrub</td></tr>
+              <tr><td>Larry Walker</td><td>Hall of Famer</td></tr>
+              <tr><td>Fred McGriff</td><td>Scrub</td></tr>
+              <tr><td>Mark McGwire</td><td>Hall of Famer</td></tr>
+              <tr><td>Sammy Sosa</td><td>Scrub</td></tr>
+              <tr><td>Rafael Palmeiro</td><td>Scrub</td></tr>
+              <tr><td>Frank Thomas</td><td>Scrub</td></tr>
+              <tr><td>Jeff Kent</td><td>Scrub</td></tr>
+            </table>
+          </center>
+          <p style="font-size: 12px">* This application, while fun, is not very sound. Our model is trained on data from previous decades. Baseball data varies over time (especially so for this year's class, which contains many players from the steroid era), so the model is trained on a substantially different population than this year's Hall of Fame class.</p>
+          <p style="font-size: 12px">** Barry Bonds classification as a scrub details a weakness of our model not previously apparent. Outliers on the very positive end of the spectrum (like Bonds, who has arguably the best statistics of any player ever) will often be classified as scrubs. This is because the Gaussian model at that point is approaching 0 for both classifications, and the weighting leads such outliers to be classified as scrubs.</p>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="row" style="background-color: #ddd">
+      <div class="container">
+        <center>
+          <p style="margin:5px;">Copyright 2013</p>
+        </center>
+      </div>
+    </div>
+    <script src="http://code.jquery.com/jquery.js"></script>
+  </body>
+</html>
